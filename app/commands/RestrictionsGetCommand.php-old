@@ -1,0 +1,78 @@
+<?php
+
+use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+
+class RestrictionsGetCommand extends Command {
+
+	/**
+	 * The console command name.
+	 *
+	 * @var string
+	 */
+	protected $name = 'restrictions:get';
+
+	/**
+	 * The console command description.
+	 *
+	 * @var string
+	 */
+	protected $description = 'Grabs the construction restrictions from the Open Data feed.';
+
+	/**
+	 * Create a new command instance.
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	/**
+	 * Execute the console command.
+	 *
+	 * @return void
+	 */
+	public function fire()
+	{
+		//
+		$ch = curl_init("http://app.toronto.ca/opendata/cart/current_road_restrictions.xml?v=1.00");
+
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+        $obj          = new SimpleXMLElement($result);
+        $restrictions = $obj->record;
+		die('<pre>'.print_r($obj,true));
+	}
+
+	/**
+	 * Get the console command arguments.
+	 *
+	 * @return array
+	 */
+	protected function getArguments()
+	{
+        return array(
+		//	array('example', InputArgument::REQUIRED, 'An example argument.'),
+		);
+	}
+
+	/**
+	 * Get the console command options.
+	 *
+	 * @return array
+	 */
+	protected function getOptions()
+	{
+		return array(
+			array('example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null),
+		);
+	}
+
+}
